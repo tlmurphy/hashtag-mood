@@ -1,8 +1,9 @@
-from flask import Flask, render_template, jsonify, request
+from flask import Flask, render_template, jsonify, request, stream_with_context, Response
 from twitter_mood.mood_gatherer import TwitterMoodGatherer
 import twitter
 import os
 from pathlib import Path
+import random
 
 app = Flask(__name__)
 
@@ -49,6 +50,14 @@ def get_mood():
     )
     return jsonify(list_of_tweets)
 
+@app.route('/stream-test', methods=['GET'])
+def stream_test():
+    def generate():
+        yield 'Hello '
+        yield '!'
+        yield 'what'
+        yield '?'
+    return Response(stream_with_context(generate()))
 
 if __name__ == '__main__':
     app.run(debug=True)
