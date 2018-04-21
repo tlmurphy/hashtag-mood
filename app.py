@@ -37,8 +37,17 @@ def get_mood():
     hashtag = request.args.get('hashtag')
     mood = TwitterMoodGatherer(twitter_api, hashtag)
     mood.gather_tweets()
-    result = mood.get_mood()
-    return jsonify({'polarity': result[0], 'subjectivity': result[1]})
+    result = mood.get_moods()
+    list_of_tweets = sorted(
+        [
+            {
+                'polarity': x.sentiment.polarity,
+                'subjectivity': x.sentiment.subjectivity,
+                'time': x.epoch_time
+            } for x in result
+        ], key=lambda x: x['time']
+    )
+    return jsonify(list_of_tweets)
 
 
 if __name__ == '__main__':
