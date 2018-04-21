@@ -18,8 +18,7 @@
     <nav class="light-blue lighten-1" role="navigation">
       <div class="nav-wrapper container"><a id="logo-container" href="#" class="brand-logo">Logo</a>
         <ul class="right hide-on-med-and-down">
-          <!-- <li><a href="#">Navbar Link</a></li> -->
-          <li><a id="stream-test">NavbarLink</a></li>
+          <li><a href="#">Navbar Link</a></li>
         </ul>
 
         <ul id="nav-mobile" class="sidenav">
@@ -49,6 +48,18 @@
           <label for="hashtag">Hashtag</label>
         </div>
         <a id="get-mood" class="btn-large waves-effect waves-light orange">Get Mood</a>
+        <p>
+          <label>
+            <input class="with-gap" name="group1" type="radio" checked />
+            <span>Static</span>
+          </label>
+        </p>
+        <p>
+          <label>
+            <input class="with-gap" name="group1" type="radio" />
+            <span>Dynamic</span>
+          </label>
+        </p>
       </div>
       <br><br>
     </div>
@@ -67,6 +78,7 @@
   <!-- Scripts -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-beta/js/materialize.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.bundle.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.0/socket.io.slim.js"></script>
   <script async defer src="https://buttons.github.io/buttons.js"></script>
   <script src="../static/chartUtils.js"></script>
   <script src="../static/actions.js"></script>
