@@ -40,6 +40,8 @@ def stream_tweets(hashtag):
     mood = TwitterMoodGatherer(twitter_api, hashtag)
     mood.gather_tweet_stream()
     for sentiment in mood.get_mood_stream():
+        if not thread:
+            break
         payload = {
             'polarity': sentiment.polarity,
             'subjectivity': sentiment.subjectivity
@@ -72,7 +74,7 @@ def get_mood():
 
 
 @socketio.on('connect')
-def stream_test():
+def start_stream():
     hashtag = request.args['hashtag']
     global thread
     with thread_lock:
@@ -81,7 +83,8 @@ def stream_test():
 
 @socketio.on('disconnect')
 def disconnect_from_client():
-    thread = None
+    global thread
+    thread = None  # Use thread variable as a flag for the child to stop
     disconnect()
 
 
