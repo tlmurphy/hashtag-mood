@@ -41,7 +41,7 @@ def stream_tweets(hashtag):
     mood.gather_tweet_stream()
     for sentiment in mood.get_mood_stream():
         if not thread:
-            break
+            return
         payload = {
             'polarity': sentiment.polarity,
             'subjectivity': sentiment.subjectivity

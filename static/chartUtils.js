@@ -14,66 +14,8 @@ var values = [];
 var labels = [];
 values.length = 100;
 labels.length = 100;
-values.fill(0);
-labels.fill(0);
-var speed = 250;
 
-var staticConfig = {
-  type: 'line',
-  data: {
-    labels: [],
-    datasets: [{
-      label: 'polarity',
-      backgroundColor: window.chartColors.blue,
-      borderColor: window.chartColors.blue,
-      data: [],
-      fill: false,
-    }]
-  },
-  options: {
-    responsive: true,
-    title: {
-      display: true,
-      fontSize: 20,
-      text: ''
-    },
-    legend: {
-      display: false
-    },
-    tooltips: {
-      mode: 'index',
-      intersect: false,
-    },
-    hover: {
-      mode: 'nearest',
-      intersect: true
-    },
-    scales: {
-      xAxes: [{
-        display: true,
-        scaleLabel: {
-          display: true,
-          labelString: 'Time'
-        },
-        ticks: {
-          display: false
-        },
-        gridLines: {
-          display: false
-        }
-      }],
-      yAxes: [{
-        display: true,
-        scaleLabel: {
-          display: true,
-          labelString: 'Polarity'
-        }
-      }]
-    }
-  }
-};
-
-var dynamicConfig = {
+var config = {
   type: 'line',
   data: {
     labels: labels,
@@ -89,14 +31,29 @@ var dynamicConfig = {
   },
   options: {
     responsive: true,
+    title: {
+      display: true,
+      fontSize: 20,
+      text: ''
+    },
     animation: {
-      duration: speed * 1.5,
+      duration: 250 * 1.5,
       easing: 'linear'
     },
     legend: false,
     scales: {
       xAxes: [{
-        display: false
+        display: true,
+        scaleLabel: {
+          display: true,
+          labelString: 'Time'
+        },
+        ticks: {
+          display: false
+        },
+        gridLines: {
+          display: false
+        }
       }],
       yAxes: [{
         ticks: {
@@ -112,36 +69,45 @@ var dynamicConfig = {
   }
 }
 
-var createChart = function (body) {
-  document.getElementById('chart-window').innerHTML = '<canvas id="line-chart" width="1000" height="600" class="chartjs-render-monitor"></canvas>';
+var createChart = function () {
   var ctx = document.getElementById('line-chart').getContext('2d');
-  window.myLine = new Chart(ctx, staticConfig);
-  updateChart(body);
-}
+  labels.fill(0);
+  values.fill(0);
+  window.myLine = new Chart(ctx, config);
+};
 
 var updateChart = function (tweetList) {
-  staticConfig.options.title.text = "#" + hashtag;
-  staticConfig.data.labels = [];
-  staticConfig.data.datasets[0].data = [];
+  config.options.title.text = "#" + hashtag;
+  config.options.tooltips = {
+    mode: 'index',
+    intersect: false
+  };
+  config.options.hover = {
+    mode: 'nearest',
+    intersect: true
+  };
+  config.data.datasets[0].label = 'polarity';
+  config.data.datasets[0].pointRadius = 3;
+  labels.fill(0);
+  values.fill(0);
   tweetList.forEach(function(tweet) {
     var d = new Date(0);
     d.setUTCSeconds(tweet.time);
-    staticConfig.data.labels.push(d);
-    staticConfig.data.datasets[0].data.push(tweet.polarity);
+    labels.push(d);
+    labels.shift();
+    values.push(tweet.polarity);
+    values.shift();
   });
   window.myLine.update();
-}
-
-var createDynamicChart = function () {
-  document.getElementById('chart-window').innerHTML = '<canvas id="line-chart" width="1000" height="600" class="chartjs-render-monitor"></canvas>';
-  var ctx = document.getElementById('line-chart').getContext('2d');
-  window.myLine = new Chart(ctx, dynamicConfig);
-}
+};
 
 var updateDynamicChart = function (info) {
+  config.options.title.text = "#" + hashtag;
+  config.options.tooltips = false;
+  config.options.hover = false;
+  config.data.datasets[0].pointRadius = 0;
   values.push(info.polarity);
   values.shift();
-  console.log(values);
   window.myLine.update();
 }
 
