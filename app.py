@@ -1,10 +1,18 @@
-from flask import Flask, render_template, jsonify, request
+from gevent import monkey
+monkey.patch_all()
+
+from threading import Lock
+from flask import Flask, render_template, jsonify, request, stream_with_context, Response
+from flask_socketio import SocketIO, emit, disconnect
 from twitter_mood.mood_gatherer import TwitterMoodGatherer
 import twitter
 import os
 from pathlib import Path
 
 app = Flask(__name__)
+socketio = SocketIO(app)
+thread = None
+thread_lock = Lock()
 
 my_file = Path("./twitter-config")
 try:
@@ -26,6 +34,21 @@ twitter_api = twitter.Api(consumer_secret=consumer_secret,
                           access_token_key=access_token_key,
                           access_token_secret=access_token_secret,
                           consumer_key=consumer_key)
+
+
+def stream_tweets(hashtag):
+    mood = TwitterMoodGatherer(twitter_api, hashtag)
+    mood.gather_tweet_stream()
+    for sentiment in mood.get_mood_stream():
+        if not thread:
+            return
+        payload = {
+            'polarity': sentiment.polarity,
+            'subjectivity': sentiment.subjectivity
+        }
+        socketio.sleep(1)
+        socketio.emit('tweet', payload)
+
 
 @app.route('/')
 def hello_world():
@@ -50,5 +73,20 @@ def get_mood():
     return jsonify(list_of_tweets)
 
 
+@socketio.on('connect')
+def start_stream():
+    hashtag = request.args['hashtag']
+    global thread
+    with thread_lock:
+        thread = socketio.start_background_task(stream_tweets, hashtag)
+
+
+@socketio.on('disconnect')
+def disconnect_from_client():
+    global thread
+    thread = None  # Use thread variable as a flag for the child to stop
+    disconnect()
+
+
 if __name__ == '__main__':
-    app.run(debug=True)
+    socketio.run(app, debug=True)

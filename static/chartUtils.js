@@ -10,16 +10,23 @@ window.chartColors = {
 	grey: 'rgb(201, 203, 207)'
 };
 
+var values = [];
+var labels = [];
+values.length = 100;
+labels.length = 100;
+
 var config = {
   type: 'line',
   data: {
-    labels: [],
+    labels: labels,
     datasets: [{
-      label: 'polarity',
+      data: values,
       backgroundColor: window.chartColors.blue,
       borderColor: window.chartColors.blue,
-      data: [],
-      fill: false,
+      borderWidth: 2,
+      lineTension: 0.25,
+      pointRadius: 0,
+      fill: false
     }]
   },
   options: {
@@ -29,17 +36,11 @@ var config = {
       fontSize: 20,
       text: ''
     },
-    legend: {
-      display: false
+    animation: {
+      duration: 250 * 1.5,
+      easing: 'linear'
     },
-    tooltips: {
-      mode: 'index',
-      intersect: false,
-    },
-    hover: {
-      mode: 'nearest',
-      intersect: true
-    },
+    legend: false,
     scales: {
       xAxes: [{
         display: true,
@@ -55,7 +56,10 @@ var config = {
         }
       }],
       yAxes: [{
-        display: true,
+        ticks: {
+          max: 1,
+          min: -1
+        },
         scaleLabel: {
           display: true,
           labelString: 'Polarity'
@@ -63,33 +67,54 @@ var config = {
       }]
     }
   }
+}
+
+var createChart = function () {
+  var ctx = document.getElementById('line-chart').getContext('2d');
+  labels.fill(0);
+  values.fill(0);
+  window.myLine = new Chart(ctx, config);
 };
 
 var updateChart = function (tweetList) {
   config.options.title.text = "#" + hashtag;
-  config.data.labels = [];
-  config.data.datasets[0].data = [];
+  config.options.tooltips = {
+    mode: 'index',
+    intersect: false
+  };
+  config.options.hover = {
+    mode: 'nearest',
+    intersect: true
+  };
+  config.data.datasets[0].label = 'polarity';
+  config.data.datasets[0].pointRadius = 3;
+  labels.fill(0);
+  values.fill(0);
   tweetList.forEach(function(tweet) {
     var d = new Date(0);
     d.setUTCSeconds(tweet.time);
-    config.data.labels.push(d);
-    config.data.datasets[0].data.push(tweet.polarity);
+    labels.push(d);
+    labels.shift();
+    values.push(tweet.polarity);
+    values.shift();
   });
+  window.myLine.update();
+};
+
+var updateDynamicChart = function (info) {
+  config.options.title.text = "#" + hashtag;
+  config.options.tooltips = false;
+  config.options.hover = false;
+  config.data.datasets[0].pointRadius = 0;
+  values.push(info.polarity);
+  values.shift();
   window.myLine.update();
 }
 
-var createChart = function (body) {
-  document.getElementById('chart-window').innerHTML = '<canvas id="line-chart" width="1000" height="600" class="chartjs-render-monitor"></canvas>';
-  var ctx = document.getElementById('line-chart').getContext('2d');
-  window.myLine = new Chart(ctx, config);
-  updateChart(body);
-}
-
-var updateData = function (tweetList) {
-  config.data.datasets.forEach(function(dataset) {
-    dataset.data = dataset.data.map(function() {
-      return randomScalingFactor();
-    });
-  });
-  window.myLine.update();
+var getChartType = function (radios) {
+  if (radios[0].checked) {
+    return 'Static'
+  } else {
+    return 'Dynamic'
+  }
 }

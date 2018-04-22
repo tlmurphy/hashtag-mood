@@ -41,13 +41,27 @@
     </div>
 
     <div class="container" id="display-chart">
-      <div id=chart-window class="row center"></div>
+      <div id=chart-window class="row center">
+        <canvas id="line-chart" width="1000" height="600" class="chartjs-render-monitor"></canvas>
+      </div>
       <div class="row center">
         <div class="input-field inline">
           <input id="hashtag" type="text" class="validate">
           <label for="hashtag">Hashtag</label>
         </div>
         <a id="get-mood" class="btn-large waves-effect waves-light orange">Get Mood</a>
+        <p>
+          <label>
+            <input class="with-gap" name="group1" type="radio" checked />
+            <span>Static</span>
+          </label>
+        </p>
+        <p>
+          <label>
+            <input class="with-gap" name="group1" type="radio" />
+            <span>Dynamic</span>
+          </label>
+        </p>
       </div>
       <br><br>
     </div>
@@ -66,9 +80,10 @@
   <!-- Scripts -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-beta/js/materialize.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.bundle.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.0/socket.io.slim.js"></script>
   <script async defer src="https://buttons.github.io/buttons.js"></script>
   <script src="../static/chartUtils.js"></script>
-  <script src="../static/actions.js"></script>
+  <script src="../static/main.js"></script>
 </body>
 
 </html>
