@@ -37,7 +37,7 @@ twitter_api = twitter.Api(consumer_secret=consumer_secret,
 
 
 def stream_tweets(hashtag):
-    mood = TwitterMoodGatherer(twitter_api, hashtag)
+    mood = TwitterMoodGatherer(twitter_api, '#' + hashtag)
     mood.gather_tweet_stream()
     for sentiment in mood.get_mood_stream():
         if not thread:
@@ -58,7 +58,7 @@ def hello_world():
 @app.route('/get-mood', methods=['GET'])
 def get_mood():
     hashtag = request.args.get('hashtag')
-    mood = TwitterMoodGatherer(twitter_api, hashtag)
+    mood = TwitterMoodGatherer(twitter_api, '#' + hashtag)
     mood.gather_tweets()
     result = mood.get_moods()
     list_of_tweets = sorted(

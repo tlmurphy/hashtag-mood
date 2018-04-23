@@ -1,3 +1,5 @@
 Flask
 twitter-mood
 python-twitter
+gevent
+flask-socketio
