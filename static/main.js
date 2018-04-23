@@ -4,11 +4,12 @@ var hashtag;
 var socket;
 var graphActive = false;
 var fromStatic = false;
+var textChanged = false;
 
 createChart();
 
 document.getElementById('get-mood').onclick = function () {
-  var chartType = getChartType(document.getElementsByName('group1'))
+  var chartType = getChartType(document.getElementsByName('group1'));
   hashtag = document.getElementById('hashtag').value;
   if (chartType === 'Static' && !graphActive) {
     handleStatic();
@@ -21,6 +22,10 @@ document.getElementById('get-mood').onclick = function () {
     handleDynamic();
   }
 };
+
+document.querySelector("input").addEventListener("change", function () {
+  textChanged = true;
+});
 
 window.addEventListener("beforeunload", function (event) {
   // If we don't disconnect the socket on a refresh, multiple threads can
@@ -49,14 +54,15 @@ var handleDynamic = function () {
     graphActive = false;
   } else {
     graphActive = true;
-    if (fromStatic) {
+    if (fromStatic || textChanged) {  // Only reset the graph if coming from a static graph or after a text input change
       values.fill(0);
       labels.fill(0);
       fromStatic = false;
+      textChanged = false;
     }
     socket = io({query: 'hashtag=' + hashtag});  // Use 127.0.0.1:5000 from flask
     socket.on('tweet', function (msg) {
       updateDynamicChart(msg);
     });
   }
-}
+};

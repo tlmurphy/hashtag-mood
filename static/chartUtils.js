@@ -67,7 +67,7 @@ var config = {
       }]
     }
   }
-}
+};
 
 var createChart = function () {
   var ctx = document.getElementById('line-chart').getContext('2d');
@@ -109,12 +109,12 @@ var updateDynamicChart = function (info) {
   values.push(info.polarity);
   values.shift();
   window.myLine.update();
-}
+};
 
 var getChartType = function (radios) {
   if (radios[0].checked) {
-    return 'Static'
+    return 'Static';
   } else {
-    return 'Dynamic'
+    return 'Dynamic';
   }
-}
+};
