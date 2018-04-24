@@ -12,8 +12,10 @@ window.chartColors = {
 
 var values = [];
 var labels = [];
+var tweetLinks = [];
 values.length = 100;
 labels.length = 100;
+tweetLinks.length = 100;
 
 var config = {
   type: 'line',
@@ -30,6 +32,7 @@ var config = {
     }]
   },
   options: {
+    onClick: graphClickEvent,
     responsive: true,
     title: {
       display: true,
@@ -71,8 +74,7 @@ var config = {
 
 var createChart = function () {
   var ctx = document.getElementById('line-chart').getContext('2d');
-  labels.fill(0);
-  values.fill(0);
+  fillDefault();
   window.myLine = new Chart(ctx, config);
 };
 
@@ -88,15 +90,14 @@ var updateChart = function (tweetList) {
   };
   config.data.datasets[0].label = 'polarity';
   config.data.datasets[0].pointRadius = 3;
-  labels.fill(0);
-  values.fill(0);
+  fillDefault();
   tweetList.forEach(function(tweet) {
-    var d = new Date(0);
-    d.setUTCSeconds(tweet.time);
-    labels.push(d);
+    labels.push(tweet.time);
     labels.shift();
     values.push(tweet.polarity);
     values.shift();
+    tweetLinks.push(tweet.link);
+    tweetLinks.shift();
   });
   window.myLine.update();
 };
@@ -108,6 +109,8 @@ var updateDynamicChart = function (info) {
   config.data.datasets[0].pointRadius = 0;
   values.push(info.polarity);
   values.shift();
+  tweetLinks.push(info.link);
+  tweetLinks.shift();
   window.myLine.update();
 };
 
@@ -118,3 +121,24 @@ var getChartType = function (radios) {
     return 'Dynamic';
   }
 };
+
+function fillDefault() {
+  labels.fill(0);
+  values.fill(0);
+  tweetLinks.fill('');
+}
+
+function graphClickEvent(event, array) {
+  if (array[0]) {
+    const linkIndex = array[0]._index;
+    var link = tweetLinks[linkIndex];
+    var modalContent = document.querySelector('.modal-content')
+    modalContent.innerHTML = '';
+    twttr.widgets.createTweet(link.split('/').pop(), modalContent)
+    .then(function (el) {
+      var elem = document.querySelector('.modal');
+      var instance = M.Modal.init(elem);
+      instance.open();
+    });
+  }
+}
