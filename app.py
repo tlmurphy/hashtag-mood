@@ -72,6 +72,15 @@ def get_mood():
     )
     return jsonify(list_of_tweets)
 
+@app.route('/get-trends', methods=['GET'])
+def get_trends():
+    trends = twitter_api.GetTrendsWoeid(23424977);  # Current trends in the US
+    trend_list = []
+    for t in trends:
+        if t.name[:1] == '#':  # We have a hashtag trend
+            trend_list.append(t.name)
+    return jsonify({'trends': trend_list})
+
 
 @socketio.on('connect')
 def start_stream():

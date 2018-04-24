@@ -6,7 +6,12 @@ var graphActive = false;
 var fromStatic = false;
 var textChanged = false;
 
-createChart();
+window.onload = function () {
+  addTrends(document.getElementById('trends-dropdown'));
+  var elem = document.querySelector('.dropdown-trigger');
+  var instance = M.Dropdown.init(elem);
+  createChart();
+}
 
 document.getElementById('get-mood').onclick = function () {
   var chartType = getChartType(document.getElementsByName('group1'));
@@ -23,15 +28,37 @@ document.getElementById('get-mood').onclick = function () {
   }
 };
 
-document.querySelector("input").addEventListener("change", function () {
+document.querySelector('input').addEventListener('change', function () {
   textChanged = true;
 });
 
-window.addEventListener("beforeunload", function (event) {
+window.addEventListener('beforeunload', function (event) {
   // If we don't disconnect the socket on a refresh, multiple threads can
   // be spawned due to how I'm handling threads in the server :')
   socket.disconnect();
 });
+
+var onClickTrend = function (trend) {
+  hashtag = trend.slice(1);  // Removing the hashtag from the string
+  document.querySelector("input").value = hashtag;
+  M.updateTextFields();
+  if (graphActive) {
+    stopDynamicGraph();
+  }
+  handleStatic();
+  fromStatic = true;
+};
+
+var addTrends = function (list) {
+  fetch('/get-trends').then(function (response) {
+    return response.json();
+  })
+  .then(function (body) {
+    body.trends.forEach(function(t) {
+      list.innerHTML += `<li><a class="light-blue-text" onclick=onClickTrend("${t}")>${t}</a></li>`;
+    });
+  });
+}
 
 var handleStatic = function () {
   const params = { hashtag: hashtag };
@@ -46,12 +73,7 @@ var handleStatic = function () {
 
 var handleDynamic = function () {
   if (graphActive) {
-    socket.disconnect();
-    var b = document.getElementById('get-mood');
-    b.innerText = 'Get Mood';
-    b.classList.remove('red');
-    b.classList.add('orange');
-    graphActive = false;
+    stopDynamicGraph();
   } else {
     graphActive = true;
     if (fromStatic || textChanged) {  // Only reset the graph if coming from a static graph or after a text input change
@@ -66,3 +88,12 @@ var handleDynamic = function () {
     });
   }
 };
+
+var stopDynamicGraph = function () {
+  socket.disconnect();
+  var b = document.getElementById('get-mood');
+  b.innerText = 'Get Mood';
+  b.classList.remove('red');
+  b.classList.add('orange');
+  graphActive = false;
+}
