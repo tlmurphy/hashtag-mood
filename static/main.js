@@ -42,6 +42,9 @@ var onClickTrend = function (trend) {
   hashtag = trend.slice(1);  // Removing the hashtag from the string
   document.querySelector("input").value = hashtag;
   M.updateTextFields();
+  if (graphActive) {
+    stopDynamicGraph();
+  }
   handleStatic();
   fromStatic = true;
 };
@@ -70,12 +73,7 @@ var handleStatic = function () {
 
 var handleDynamic = function () {
   if (graphActive) {
-    socket.disconnect();
-    var b = document.getElementById('get-mood');
-    b.innerText = 'Get Mood';
-    b.classList.remove('red');
-    b.classList.add('orange');
-    graphActive = false;
+    stopDynamicGraph();
   } else {
     graphActive = true;
     if (fromStatic || textChanged) {  // Only reset the graph if coming from a static graph or after a text input change
@@ -90,3 +88,12 @@ var handleDynamic = function () {
     });
   }
 };
+
+var stopDynamicGraph = function () {
+  socket.disconnect();
+  var b = document.getElementById('get-mood');
+  b.innerText = 'Get Mood';
+  b.classList.remove('red');
+  b.classList.add('orange');
+  graphActive = false;
+}
