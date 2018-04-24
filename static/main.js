@@ -52,7 +52,7 @@ var addTrends = function (list) {
   })
   .then(function (body) {
     body.trends.forEach(function(t) {
-      list.innerHTML += `<li><a onclick=onClickTrend("${t}")>${t}</a></li>`;
+      list.innerHTML += `<li><a class="light-blue-text" onclick=onClickTrend("${t}")>${t}</a></li>`;
     });
   });
 }
