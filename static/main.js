@@ -28,6 +28,12 @@ document.getElementById('get-mood').onclick = function () {
   }
 };
 
+document.getElementById('get-json').onclick = function () {
+  fetch('/get-json').then(function (response) {
+    return response;
+  });
+}
+
 document.querySelector('input').addEventListener('change', function () {
   textChanged = true;
 });
