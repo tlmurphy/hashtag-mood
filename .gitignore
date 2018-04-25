@@ -102,3 +102,6 @@ ENV/
 
 # Twitter config
 .twitter-config
+
+# twitter data
+list-of-tweets.json

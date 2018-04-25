@@ -56,12 +56,12 @@ def stream_tweets(hashtag):
 
 
 @app.route('/')
-def hello_world():
+def index():
     return render_template('index.html')
 
-@app.route('/get-json', methods=['GET'])
+@app.route('/get-json')
 def get_json():
-    send_file('list-of-tweets.json', as_attachment=True, attachment_filename='data.json')
+    return send_file('list-of-tweets.json', as_attachment=True, attachment_filename='data.json', cache_timeout=-1)
 
 @app.route('/get-mood', methods=['GET'])
 def get_mood():
