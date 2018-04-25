@@ -27,13 +27,18 @@ var config = {
       borderColor: window.chartColors.blue,
       borderWidth: 2,
       lineTension: 0.25,
-      pointRadius: 0,
+      pointRadius: 3,
       fill: false
     }]
   },
   options: {
     onClick: graphClickEvent,
     responsive: true,
+    layout: {
+      padding: {
+        right: 10
+      }
+    },
     title: {
       display: true,
       fontSize: 20,
@@ -89,7 +94,6 @@ var updateChart = function (tweetList) {
     intersect: true
   };
   config.data.datasets[0].label = 'polarity';
-  config.data.datasets[0].pointRadius = 3;
   fillDefault();
   tweetList.forEach(function(tweet) {
     labels.push(tweet.time);
@@ -105,8 +109,6 @@ var updateChart = function (tweetList) {
 var updateDynamicChart = function (info) {
   config.options.title.text = "#" + hashtag;
   config.options.tooltips = false;
-  config.options.hover = false;
-  config.data.datasets[0].pointRadius = 0;
   values.push(info.polarity);
   values.shift();
   tweetLinks.push(info.link);
@@ -121,6 +123,11 @@ var getChartType = function (radios) {
     return 'Dynamic';
   }
 };
+
+var resetGraph = function () {
+  fillDefault();
+  window.myLine.update();
+}
 
 function fillDefault() {
   labels.fill(0);

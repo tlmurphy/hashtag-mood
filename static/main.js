@@ -77,7 +77,7 @@ var handleDynamic = function () {
   } else {
     graphActive = true;
     if (fromStatic || textChanged) {  // Only reset the graph if coming from a static graph or after a text input change
-      fillDefault();
+      resetGraph();
       fromStatic = false;
       textChanged = false;
     }
