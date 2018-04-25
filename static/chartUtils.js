@@ -127,7 +127,7 @@ var getChartType = function (radios) {
 var resetGraph = function () {
   fillDefault();
   window.myLine.update();
-}
+};
 
 function fillDefault() {
   labels.fill(0);
@@ -139,7 +139,7 @@ function graphClickEvent(event, array) {
   if (array[0]) {
     const linkIndex = array[0]._index;
     var link = tweetLinks[linkIndex];
-    var modalContent = document.querySelector('.modal-content')
+    var modalContent = document.querySelector('.modal-content');
     modalContent.innerHTML = '';
     twttr.widgets.createTweet(link.split('/').pop(), modalContent)
     .then(function (el) {
