@@ -4,8 +4,23 @@ body {
   display: flex;
   min-height: 100vh;
   flex-direction: column;
+  /* Prevent shifting on modal pop up */
+  overflow: auto !important;
 }
 
 main {
   flex: 1 0 auto;
+}
+
+/* Kinda don't know how this works */
+.modal {
+  width: 600px;
+  max-width: 100%;
+}
+
+.modal-content {
+  margin: auto;
+  display: block;
+  width: 80%;
+  max-width: 600px;
 }

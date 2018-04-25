@@ -11,7 +11,7 @@ window.onload = function () {
   var elem = document.querySelector('.dropdown-trigger');
   var instance = M.Dropdown.init(elem);
   createChart();
-}
+};
 
 document.getElementById('get-mood').onclick = function () {
   var chartType = getChartType(document.getElementsByName('group1'));
@@ -58,7 +58,7 @@ var addTrends = function (list) {
       list.innerHTML += `<li><a class="light-blue-text" onclick=onClickTrend("${t}")>${t}</a></li>`;
     });
   });
-}
+};
 
 var handleStatic = function () {
   const params = { hashtag: hashtag };
@@ -77,8 +77,7 @@ var handleDynamic = function () {
   } else {
     graphActive = true;
     if (fromStatic || textChanged) {  // Only reset the graph if coming from a static graph or after a text input change
-      values.fill(0);
-      labels.fill(0);
+      resetGraph();
       fromStatic = false;
       textChanged = false;
     }
@@ -96,4 +95,4 @@ var stopDynamicGraph = function () {
   b.classList.remove('red');
   b.classList.add('orange');
   graphActive = false;
-}
+};

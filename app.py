@@ -39,12 +39,13 @@ twitter_api = twitter.Api(consumer_secret=consumer_secret,
 def stream_tweets(hashtag):
     mood = TwitterMoodGatherer(twitter_api, '#' + hashtag)
     mood.gather_tweet_stream()
-    for sentiment in mood.get_mood_stream():
+    for time_sentiment in mood.get_mood_stream():
         if not thread:
             return
         payload = {
-            'polarity': sentiment.polarity,
-            'subjectivity': sentiment.subjectivity
+            'polarity': time_sentiment.sentiment.polarity,
+            'subjectivity': time_sentiment.sentiment.subjectivity,
+            'link': time_sentiment.url
         }
         socketio.sleep(1)
         socketio.emit('tweet', payload)
@@ -66,7 +67,8 @@ def get_mood():
             {
                 'polarity': x.sentiment.polarity,
                 'subjectivity': x.sentiment.subjectivity,
-                'time': x.epoch_time
+                'time': x.created_at,
+                'link': x.url
             } for x in result
         ], key=lambda x: x['time']
     )
@@ -74,10 +76,10 @@ def get_mood():
 
 @app.route('/get-trends', methods=['GET'])
 def get_trends():
-    trends = twitter_api.GetTrendsWoeid(23424977);  # Current trends in the US
+    trends = twitter_api.GetTrendsWoeid(23424977)  # Current trends in the US
     trend_list = []
     for t in trends:
-        if t.name[:1] == '#':  # We have a hashtag trend
+        if t.name[:1] == '#':  # Only get hashtag trends
             trend_list.append(t.name)
     return jsonify({'trends': trend_list})
 
