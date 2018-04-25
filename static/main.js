@@ -5,6 +5,7 @@ var socket;
 var graphActive = false;
 var fromStatic = false;
 var textChanged = false;
+var getJsonButton = document.getElementById('get-json');
 
 window.onload = function () {
   addTrends(document.getElementById('trends-dropdown'));
@@ -26,6 +27,7 @@ document.getElementById('get-mood').onclick = function () {
     b.classList.add('red');
     handleDynamic();
   }
+  getJsonButton.classList.remove('disabled');
 };
 
 document.querySelector('input').addEventListener('change', function () {
@@ -35,7 +37,9 @@ document.querySelector('input').addEventListener('change', function () {
 window.addEventListener('beforeunload', function (event) {
   // If we don't disconnect the socket on a refresh, multiple threads can
   // be spawned due to how I'm handling threads in the server :')
-  socket.disconnect();
+  if (socket != null) {
+    socket.disconnect();
+  }
 });
 
 var onClickTrend = function (trend) {
@@ -47,6 +51,7 @@ var onClickTrend = function (trend) {
   }
   handleStatic();
   fromStatic = true;
+  getJsonButton.classList.remove('disabled');
 };
 
 var addTrends = function (list) {

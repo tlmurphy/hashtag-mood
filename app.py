@@ -2,7 +2,7 @@ from gevent import monkey
 monkey.patch_all()
 
 from threading import Lock
-from flask import Flask, render_template, jsonify, request, stream_with_context, Response
+from flask import Flask, render_template, jsonify, request, stream_with_context, Response, json, send_file
 from flask_socketio import SocketIO, emit, disconnect
 from twitter_mood.mood_gatherer import TwitterMoodGatherer
 import twitter
@@ -39,6 +39,7 @@ twitter_api = twitter.Api(consumer_secret=consumer_secret,
 def stream_tweets(hashtag):
     mood = TwitterMoodGatherer(twitter_api, '#' + hashtag)
     mood.gather_tweet_stream()
+    with open('list-of-tweets.json', 'w') as f: f.write('[]')
     for time_sentiment in mood.get_mood_stream():
         if not thread:
             return
@@ -47,14 +48,20 @@ def stream_tweets(hashtag):
             'subjectivity': time_sentiment.sentiment.subjectivity,
             'link': time_sentiment.url
         }
+        data = json.load(open('list-of-tweets.json'))
+        data.append(payload)
+        with open('list-of-tweets.json', 'w') as f: f.write(json.dumps(data))
         socketio.sleep(1)
         socketio.emit('tweet', payload)
 
 
 @app.route('/')
-def hello_world():
+def index():
     return render_template('index.html')
 
+@app.route('/get-json')
+def get_json():
+    return send_file('list-of-tweets.json', as_attachment=True, attachment_filename='data.json', cache_timeout=-1)
 
 @app.route('/get-mood', methods=['GET'])
 def get_mood():
@@ -72,6 +79,8 @@ def get_mood():
             } for x in result
         ], key=lambda x: x['time']
     )
+    json_text = json.dumps(list_of_tweets)
+    with open('list-of-tweets.json', 'w') as f: f.write(json_text)
     return jsonify(list_of_tweets)
 
 @app.route('/get-trends', methods=['GET'])
